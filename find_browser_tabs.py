@@ -4,11 +4,8 @@ import subprocess
 import sys
 
 import dbus
-import i3ipc
 
-# i3
-i3 = i3ipc.Connection()
-root = i3.get_tree()
+from general import *
 
 # dbus
 bus = dbus.SessionBus()
@@ -47,5 +44,8 @@ activate(tabId)
 
 # focus window
 # TODO: find right firefox window for firefox browser tab
-root.find_named('Firefox')[0].command('focus')
+windows = find_windows_by_name('Firefox')
+for window in windows:
+    if window.get_wm_class():
+        focus_window(window)
 
