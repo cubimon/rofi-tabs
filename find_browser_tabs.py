@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import json
-import subprocess
 import sys
 
 import dbus
+import rofi
 
 from general import *
 
@@ -21,26 +21,20 @@ activate = browser_tabs_interface.get_dbus_method('activate')
 # get tabs
 tabs = get_tabs()
 tabs = json.loads(tabs)
-tabs.values()
+tab_ids = list(tabs.keys())
 tab_descriptions = [
         str(tab_id) + ' - ' + tab_name 
         for tab_id, tab_name in tabs.items()]
 
 # get selected tab from rofi
-p = subprocess.Popen(['rofi', '-dmenu'],
-        stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-stdout, stderr = p.communicate(
-        input='\n'.join(tab_descriptions).encode('utf-8'))
-selection = stdout.decode('utf-8')
-if '-' not in selection:
-    sys.exit(1)
-tabId = selection[:selection.index('-') - 1]
-if not tabId.isdigit():
-    sys.exit(2)
-tabId = int(tabId)
+r = rofi.Rofi()
+index, _ = r.select('Select tab to focus', tab_descriptions)
+if index < 0:
+    sys.exit(0)
+tab_id = tab_ids[index]
 
 # active tab
-activate(tabId)
+activate(tab_id)
 
 # focus window
 # TODO: find right firefox window for firefox browser tab

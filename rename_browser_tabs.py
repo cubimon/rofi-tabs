@@ -1,8 +1,6 @@
 #!/usr/bin/python
-import json
 import dbus
-import subprocess
-import sys
+import rofi
 
 # dbus stuff
 bus = dbus.SessionBus()
@@ -16,11 +14,9 @@ get_active_tab_id = browser_tabs_interface.get_dbus_method('activeTabId')
 rename = browser_tabs_interface.get_dbus_method('rename')
 
 # get new name from rofi
-p = subprocess.Popen(['rofi', '-dmenu'],
-        stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-stdout, stderr = p.communicate()
-new_name = stdout.decode('utf-8')
+r = rofi.Rofi()
+new_name = r.text_entry('Enter new Browser tab name')
 
 # rename
-rename(int(get_active_tab_id()), new_name.split('\n')[0])
+rename(int(get_active_tab_id()), new_name)
 

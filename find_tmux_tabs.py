@@ -1,10 +1,10 @@
 #!/usr/bin/python
-import json
 import subprocess
 import sys
 import psutil
 
 import libtmux
+import rofi
 
 from general import *
 
@@ -41,11 +41,11 @@ for session in server.sessions:
         tab_descriptions.append(session.name + ' - ' + window.name)
 
 # get selected tab from rofi
-p = subprocess.Popen(['rofi', '-dmenu'],
-        stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-stdout, stderr = p.communicate(
-        input='\n'.join(tab_descriptions).encode('utf-8'))
-selection = stdout.decode('utf-8').split('\n')[0]
+r = rofi.Rofi()
+index, _ = r.select('Select tab to focus', tab_descriptions)
+if index < 0:
+    sys.exit(0)
+selection = tab_descriptions[index]
 
 # focus selected tab + window
 for session in server.sessions:
